@@ -27,7 +27,10 @@ int main(int argc, char* argv[])
 
     const std::string PARAM_PATH = argv[1];
 
+    // 读取配置文件，获取参数，创建CalibrationHandlerParam类
     perception::CalibrationHandlerParam param = perception::getCalibrationHandlerParam(PARAM_PATH);
+
+    //
     perception::CalibrationHandler<PointCloudType>::Ptr calibrationHandler(
         new perception::CalibrationHandler<PointCloudType>(param));
 

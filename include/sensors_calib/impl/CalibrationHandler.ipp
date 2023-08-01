@@ -13,17 +13,17 @@ CalibrationHandler<POINT_CLOUD_TYPE>::CalibrationHandler(const CalibrationHandle
     , m_initialGuess(TransformInfo::Identity())
 {
     validate<CalibrationHandlerParam>(m_param);
-
+    //初值不为空，读取初值
     if (!param.pathToInitialGuess.empty()) {
         m_initialGuess = perception::getTransformInfo(m_param.pathToInitialGuess);
     }
     std::vector<std::string> imagePaths = parseMetaDataFile(m_param.pathToImages);
     std::vector<std::string> pointcloudPaths = parseMetaDataFile(m_param.pathToPointClouds);
-
+    // 判断点云和图像数量是否相等
     if (imagePaths.size() != pointcloudPaths.size()) {
         throw std::runtime_error("number of images and point clouds must be the same");
     }
-
+    //判断是否为空
     if (imagePaths.empty()) {
         throw std::runtime_error("empty calibration data");
     }
@@ -49,15 +49,19 @@ CalibrationHandler<POINT_CLOUD_TYPE>::CalibrationHandler(const CalibrationHandle
 
         if (m_param.filterInputImage) {
             cv::Mat filtered;
+            //双边滤波处理
             cv::bilateralFilter(colorImg, filtered, m_param.filterDiameter, m_param.sigmaColor, m_param.sigmaSpace);
+            //转为灰度图
             cv::cvtColor(filtered, grayImg, cv::COLOR_BGR2GRAY);
         } else {
+            //转为灰度图
             cv::cvtColor(colorImg, grayImg, cv::COLOR_BGR2GRAY);
         }
 
         m_colorImgs.emplace_back(colorImg);
         m_grayImgs.emplace_back(grayImg);
 
+        //对读取的点云进行box滤波
         inCloud = perception::PointCloudFilter<PointCloudType>::filterXYZAxis(
             inCloud, m_param.xMin, m_param.xMax, m_param.yMin, m_param.yMax, m_param.zMin, m_param.zMax);
 
@@ -73,14 +77,21 @@ template <typename POINT_CLOUD_TYPE> CalibrationHandler<POINT_CLOUD_TYPE>::~Cali
 {
 }
 
+/***
+* @brief  计算MI损失
+* @param  transform - 目前的变换，Eigen::Matrix<double,6,1>
+* @return 当前变换下的损失值大小
+*/
 template <typename POINT_CLOUD_TYPE>
 double CalibrationHandler<POINT_CLOUD_TYPE>::calculateMICost(const TransformInfo& transform)
 {
+    //又reset？
     m_histogramHandler.reset(new perception::HistogramHandler(m_param.numBins));
     m_probabilityHandler.reset(new perception::ProbabilityHandler(m_param.numBins));
 
+    //更新得到直方图和联合直方图
     m_histogramHandler->update<PointCloudType>(m_grayImgs, m_poinclouds, *m_cameraInfo,
-                                               perception::toAffine(transform));
+                                               perception::toAffine(transform));//perception::toAffine(transform),得到Eigen::Affine3d类型变量，欧拉角转换为矩阵
 
     switch (m_param.probabilityEstimatorType) {
         case 0: {
@@ -121,14 +132,19 @@ CalibrationHandler<POINT_CLOUD_TYPE>::step(const double prevCost, const Transfor
     return deltaTransformInfo;
 }
 
+
 template <typename POINT_CLOUD_TYPE> TransformInfo CalibrationHandler<POINT_CLOUD_TYPE>::optimize()
 {
     TransformInfo prevTransform = TransformInfo::Zero(), curTransform = m_initialGuess;
+    // using TransformInfo = Eigen::Matrix<double, 6, 1>;   x, y, z, r, p, y
+    // using DeltaTransformInfo = TransformInfo; 
     DeltaTransformInfo prevDeltaTransform = DeltaTransformInfo::Zero(), curDeltaTransform = DeltaTransformInfo::Zero();
 
     double gammaTrans, gammaRot;
-
+    
+    //循环迭代 m_param.maxIter 次
     for (std::size_t i = 0; i < m_param.maxIter; ++i) {
+        // 计算cost
         double prevCost = this->calculateMICost(curTransform);
         curDeltaTransform = this->step(prevCost, curTransform, m_param);
 

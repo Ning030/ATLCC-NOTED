@@ -1,0 +1,10 @@
+/home/linuxbrew/automatic_lidar_camera_calibration/data/data/photo/0.bmp
+/home/linuxbrew/automatic_lidar_camera_calibration/data/data/photo/1.bmp
+/home/linuxbrew/automatic_lidar_camera_calibration/data/data/photo/2.bmp
+/home/linuxbrew/automatic_lidar_camera_calibration/data/data/photo/3.bmp
+/home/linuxbrew/automatic_lidar_camera_calibration/data/data/photo/4.bmp
+/home/linuxbrew/automatic_lidar_camera_calibration/data/data/photo/5.bmp
+/home/linuxbrew/automatic_lidar_camera_calibration/data/data/photo/6.bmp
+/home/linuxbrew/automatic_lidar_camera_calibration/data/data/photo/7.bmp
+/home/linuxbrew/automatic_lidar_camera_calibration/data/data/photo/8.bmp
+/home/linuxbrew/automatic_lidar_camera_calibration/data/data/photo/9.bmp

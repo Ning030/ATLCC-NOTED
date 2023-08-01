@@ -20,8 +20,8 @@ HistogramHandler::HistogramHandler(int numBins)
         throw std::runtime_error("invalid number of bins");
     }
 
-    m_binFraction = MAX_BINS / m_numBins;
-    m_intensityHist = Histogram::zeros(1, m_numBins, CV_64FC1);
+    m_binFraction = MAX_BINS / m_numBins;// 等于1
+    m_intensityHist = Histogram::zeros(1, m_numBins, CV_64FC1);//using Histogram = cv::Mat;
     m_grayHist = Histogram::zeros(1, m_numBins, CV_64FC1);
     m_jointHist = JointHistogram::zeros(m_numBins, m_numBins, CV_64FC1);
 }
@@ -30,13 +30,16 @@ HistogramHandler::~HistogramHandler()
 {
 }
 
+// 计算标准差
+
 std::array<double, 2> HistogramHandler::calculateStds() const
 {
     if (m_totalPoints == 0) {
         return std::array<double, 2>{0, 0};
     }
-
+    // 灰度均值 m_graySum += grayBin;
     double meanGray = m_graySum / m_totalPoints;
+    // 强度均值 m_intensitySum += intensityBin;
     double meanIntensity = m_intensitySum / m_totalPoints;
 
     double sigmaGray = 0;

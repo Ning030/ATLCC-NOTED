@@ -77,9 +77,10 @@ template <typename POINT_CLOUD_TYPE> class CalibrationHandler
     using PointCloudPtr = typename PointCloud::Ptr;
 
     using Ptr = std::shared_ptr<CalibrationHandler>;
-    using DeltaTransformInfo = TransformInfo;
+    using DeltaTransformInfo = TransformInfo; // using TransformInfo = Eigen::Matrix<double, 6, 1>;   x, y, z, r, p, y
 
  public:
+   // 构造函数，并且防止隐式类型转换 
     explicit CalibrationHandler(const CalibrationHandlerParam& param);
     virtual ~CalibrationHandler();
 
@@ -97,18 +98,19 @@ template <typename POINT_CLOUD_TYPE> class CalibrationHandler
                             const CalibrationHandlerParam& param);
 
  private:
-    CalibrationHandlerParam m_param;
+   
+    CalibrationHandlerParam m_param;   // 配置参数
+   
+    TransformInfo m_initialGuess;      // 初值
+    TransformInfo m_transformation;    // final transformation parameter
+    CameraInfo::Ptr m_cameraInfo;      // 相机内参
 
-    TransformInfo m_initialGuess;
-    TransformInfo m_transformation;  // final transformation parameter
-    CameraInfo::Ptr m_cameraInfo;
+    HistogramHandler::Ptr m_histogramHandler;  //直方图处理类
+    ProbabilityHandler::Ptr m_probabilityHandler; //概率处理类
 
-    HistogramHandler::Ptr m_histogramHandler;
-    ProbabilityHandler::Ptr m_probabilityHandler;
-
-    std::vector<cv::Mat> m_colorImgs;
-    std::vector<cv::Mat> m_grayImgs;
-    std::vector<PointCloudPtr> m_poinclouds;
+    std::vector<cv::Mat> m_colorImgs; //彩色图像
+    std::vector<cv::Mat> m_grayImgs;  //灰度图
+    std::vector<PointCloudPtr> m_poinclouds;//点云
 };
 
 }  // namespace perception

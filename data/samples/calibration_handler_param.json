@@ -1,8 +1,8 @@
 {
-    "path_to_initial_guess": "",
-    "path_to_images": "",
-    "path_to_point_clouds": "",
-    "path_to_camera_info": "",
+    "path_to_initial_guess": "/home/linuxbrew/automatic_lidar_camera_calibration/data/samples/initial_guess.json",
+    "path_to_images": "/home/linuxbrew/automatic_lidar_camera_calibration/data/data/corner_photo.txt",  
+    "path_to_point_clouds": "/home/linuxbrew/automatic_lidar_camera_calibration/data/data/corner_lidar.txt",
+    "path_to_camera_info": "/home/linuxbrew/automatic_lidar_camera_calibration/data/samples/camera_info.json",
     "num_bins": 256,
     "delta_trans":0.01,
     "delta_rot_deg": 1.0,

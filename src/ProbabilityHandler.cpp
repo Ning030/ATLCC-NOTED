@@ -28,21 +28,26 @@ ProbabilityHandler::~ProbabilityHandler()
 {
 }
 
+
 bool ProbabilityHandler::estimateMLE(const HistogramHandler::Ptr& histogram, const bool bayes)
 {
+    //判断是否为0个点
     if (histogram->totalPoints() == 0) {
         DEBUG_LOG("empty sample datas");
         return false;
     }
+    //获取全部点云数（能投影到图像上）
     m_totalPoints = histogram->totalPoints();
-    double aJoint = bayes ? m_numBins * m_numBins : 0.0;
-    double aMargin = bayes ? m_numBins : 0.0;
+    double aJoint = bayes ? m_numBins * m_numBins : 0.0; //默认为0
+    double aMargin = bayes ? m_numBins : 0.0;            //默认为0
 
     for (int i = 0; i < m_numBins; ++i) {
         for (int j = 0; j < m_numBins; ++j) {
+            // 次数/总次数 = 概率
             m_jointProb.at<double>(i, j) = histogram->jointHist().at<double>(i, j) / (m_totalPoints + aJoint);
         }
 
+        // 次数/总次数 = 概率
         m_grayProb.at<double>(i) = histogram->grayHist().at<double>(i) / (m_totalPoints + aMargin);
         m_intensityProb.at<double>(i) = histogram->intensityHist().at<double>(i) / (m_totalPoints + aMargin);
     }
@@ -51,6 +56,7 @@ bool ProbabilityHandler::estimateMLE(const HistogramHandler::Ptr& histogram, con
     double sigmaGray = stds[0];
     double sigmaIntensity = stds[1];
 
+    // KDE估计联合概率密度
     // bandwidths for kernel density estimation based on Silverman's rule of thumb
     m_sigmaGrayBandwidth = 1.06 * std::sqrt(sigmaGray) / std::pow(m_totalPoints, 0.2);
     m_sigmaIntensityBandwidth = 1.06 * std::sqrt(sigmaIntensity) / std::pow(m_totalPoints, 0.2);
@@ -60,12 +66,18 @@ bool ProbabilityHandler::estimateMLE(const HistogramHandler::Ptr& histogram, con
     return true;
 }
 
+/***
+* @brief  
+* @param  path - 类名文件的路径
+* @return 所有类名
+*/
 bool ProbabilityHandler::estimateJS(const HistogramHandler::Ptr& histogram, const bool bayes)
 {
     if (!this->estimateMLE(histogram, bayes)) {
         return false;
     }
 
+    //不是1？？？
     double squareSumMLE = std::pow(cv::norm(m_jointProb), 2);
 
     cv::Mat jointTarget = cv::Mat::eye(m_numBins, m_numBins, CV_64FC1) / (m_numBins);

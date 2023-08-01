@@ -1,0 +1,7 @@
+/home/linuxbrew/automatic_lidar_camera_calibration/data/my_data/pcd/1.pcd
+/home/linuxbrew/automatic_lidar_camera_calibration/data/my_data/pcd/2.pcd
+/home/linuxbrew/automatic_lidar_camera_calibration/data/my_data/pcd/3.pcd
+/home/linuxbrew/automatic_lidar_camera_calibration/data/my_data/pcd/4.pcd
+/home/linuxbrew/automatic_lidar_camera_calibration/data/my_data/pcd/5.pcd
+/home/linuxbrew/automatic_lidar_camera_calibration/data/my_data/pcd/6.pcd
+/home/linuxbrew/automatic_lidar_camera_calibration/data/my_data/pcd/7.pcd
